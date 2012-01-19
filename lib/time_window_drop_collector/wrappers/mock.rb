@@ -8,7 +8,7 @@ class TimeWindowDropCollector
 			end
 
 			def incr( key, expire_time )
-				client.incr( key, 1 )
+				client.incr( key, 1, nil, nil )
 			end
 
 			def values_for( keys )

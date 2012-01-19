@@ -7,22 +7,22 @@ class TimeWindowDropCollector::Storage
     @slices = slices
   end
 
-  def self.incr( key )
+  def incr( key )
     client.incr( time_key( key ), window )
   end
 
-  def self.count( key )
+  def count( key )
     time_keys = time_keys( key )
-    values    = client.values( time_keys )
+    values    = client.values_for( time_keys )
 
     values.map( &:to_i ).inject( :+ )
   end
 
-  def self.time_key( key, time = timestamp )
+  def time_key( key, time = timestamp )
     "drop_window_#{key}_#{time.strftime( '%Y%m%d%H%M' )}"
   end
 
-  def self.time_keys( key )
+  def time_keys( key )
     now = timestamp
 
     ( 0..9 ).map{ |i|
@@ -30,7 +30,7 @@ class TimeWindowDropCollector::Storage
     }
   end
 
-  def self.timestamp
+  def timestamp
     Time.now
   end
 end
