@@ -14,6 +14,8 @@ You can also keep record for **different keys**.
 
 ### Config
 
+These are the default values
+
     twdc =
       TimeWindowDropCollector.new do
         client :memcache, "localhost:11211"     # underneeth client
@@ -35,5 +37,32 @@ You can also keep record for **different keys**.
 
 ## Cache clients wrappers
 
-Now we have implementation for 3 diferent underneeth cache clients. The implementations of these wrappers just have to define the next methods:
+Now we have implementation for 3 diferent underneeth cache clients.
 
+### Memcache
+
+It uses the Dalli Client for memcache.
+
+    twdc =
+      TimeWindowDropCollector.new do
+        client :memcache, "localhost:11211"
+      end
+
+### Rails cache
+
+It uses the `Rails.cache` accesible
+
+    twdc =
+      TimeWindowDropCollector.new do
+        client :rails_cache
+      end
+
+
+### Redis
+
+    twdc =
+      TimeWindowDropCollector.new do
+        client :redis, { :host => "host", :port => "port" }
+      end
+
+At the moment this wrapper does not support auto-key-clean so the stored keys will be there until anyone delete them.

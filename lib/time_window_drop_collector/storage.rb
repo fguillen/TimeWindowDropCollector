@@ -19,18 +19,28 @@ class TimeWindowDropCollector::Storage
   end
 
   def time_key( key, time = timestamp )
-    "drop_window_#{key}_#{time.strftime( '%Y%m%d%H%M' )}"
+    "drop_window_#{key}_#{slice_start_timestamp( time )}"
   end
 
   def time_keys( key )
     now = timestamp
 
-    ( 0..9 ).map{ |i|
-      time_key( key, now - ( i*60 ) )
+    ( 0..( slices - 1 ) ).map{ |i|
+      time_key( key, now - ( ( i*slice_milliseconds ) / 1000 ) )
     }
   end
 
   def timestamp
     Time.now
+  end
+
+  def slice_milliseconds
+    ( window * 1000 ) / slices
+  end
+
+  def slice_start_timestamp( time )
+    time_milliseconds = ( time.to_f * 1000 ).truncate
+
+    ( time_milliseconds / slice_milliseconds ) * slice_milliseconds
   end
 end
