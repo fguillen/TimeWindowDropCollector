@@ -1,5 +1,5 @@
 module TimeWindowDropCollector::Config
-  def self.extract( &block )
+  def self.extract( block )
     @opts = {}
     instance_eval( &block )
     @opts
