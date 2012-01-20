@@ -15,7 +15,7 @@ class TimeWindowDropCollector::Storage
     time_keys = time_keys( key )
     values    = client.values_for( time_keys )
 
-    values.map( &:to_i ).inject( :+ )
+    values.map( &:to_i ).inject( :+ ).to_i
   end
 
   def time_key( key, time = timestamp )

@@ -9,7 +9,7 @@ class MockWrapperTest < Test::Unit::TestCase
 
   def test_incr
     wrapper = TimeWindowDropCollector::Wrappers::Mock.new( ["arg1"] )
-    wrapper.client.expects( :incr ).with( "key", 1 )
+    wrapper.client.expects( :incr ).with( "key", 1, nil, 1 )
     wrapper.incr( "key", "expire_time" )
   end
 
