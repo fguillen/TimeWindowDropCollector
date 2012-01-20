@@ -1,8 +1,5 @@
 require_relative "test_helper"
 
-class Rails
-end
-
 class MemcacheWrapperTest < Test::Unit::TestCase
   def setup
     @rails_client = mock()

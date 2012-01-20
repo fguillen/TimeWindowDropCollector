@@ -5,6 +5,12 @@ require "memcache_mock"
 
 require_relative "../lib/time_window_drop_collector.rb"
 
-class Test::Unit::TestCase
-  FIXTURES = "#{File.dirname( __FILE__ )}/fixtures"
+# mocking big classes
+class Rails
+  def self.cache
+  end
 end
+
+class Redis
+end
+
