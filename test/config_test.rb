@@ -6,12 +6,14 @@ class ConfigTest < Test::Unit::TestCase
   end
 
   def test_config
-    config =
-      TimeWindowDropCollector::Config.extract do
+    proc =
+      Proc.new do
         client "client", "client_opt1", "client_opt2"
         window "window"
         slices "slices"
       end
+
+    config = TimeWindowDropCollector::Config.extract( proc )
 
     assert_equal( "client", config[:client] )
     assert_equal( ["client_opt1", "client_opt2"], config[:client_opts] )

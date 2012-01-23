@@ -11,7 +11,7 @@ require_relative "time_window_drop_collector/wrappers/redis"
 require_relative "time_window_drop_collector/wrappers/rails_cache"
 
 class TimeWindowDropCollector
-  attr_reader :config, :client, :storage
+  attr_reader :config, :wrapper, :storage
 
   def initialize( &block )
     @config = {
@@ -23,8 +23,8 @@ class TimeWindowDropCollector
 
     @config.merge!( TimeWindowDropCollector::Config.extract( block ) ) if block_given?
 
-    @client  = TimeWindowDropCollector::Wrapper.instance( config[:client], config[:client_opts] )
-    @storage = TimeWindowDropCollector::Storage.new( client, config[:window], config[:slices] )
+    @wrapper = TimeWindowDropCollector::Wrapper.instance( config[:client], config[:client_opts] )
+    @storage = TimeWindowDropCollector::Storage.new( wrapper, config[:window], config[:slices] )
   end
 
   def drop( key )
