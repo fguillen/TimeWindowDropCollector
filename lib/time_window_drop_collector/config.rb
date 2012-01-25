@@ -5,8 +5,8 @@ module TimeWindowDropCollector::Config
     @opts
   end
 
-  def self.client( type, *opts )
-    @opts[:client] = type
+  def self.client( type, opts=nil )
+    @opts[:client]      = type
     @opts[:client_opts] = opts
   end
 
