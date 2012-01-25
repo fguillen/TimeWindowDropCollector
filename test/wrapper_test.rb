@@ -12,6 +12,7 @@ class WrapperTest < Test::Unit::TestCase
   end
 
   def test_instance_when_redis
+    Redis.stubs( :new )
     instance = TimeWindowDropCollector::Wrapper.instance( :redis, ["server", "port"] )
     assert( instance.is_a? TimeWindowDropCollector::Wrappers::Redis )
   end

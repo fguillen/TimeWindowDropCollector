@@ -4,7 +4,7 @@ class TimeWindowDropCollector
       attr_reader :client
 
       def initialize( opts )
-        @client = Dalli::Client.new( *opts )
+        @client = Dalli::Client.new( opts )
       end
 
       def incr( key, expire_time )
