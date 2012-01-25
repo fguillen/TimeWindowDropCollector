@@ -14,6 +14,13 @@ You can also keep record for **different keys**.
 
 ### Config
 
+    twdc =
+      TimeWindowDropCollector.new do
+        client <client>, <client_opts>     # underneeth client
+        window <seconds>                   # in seconds
+        slices <num of slices>             # one slice every minute
+      end
+
 These are the default values
 
     twdc =
@@ -23,14 +30,23 @@ These are the default values
         slices 10                               # one slice every minute
       end
 
+#### Client
+Can be:
+
+* :memcache
+* :redis
+* :rails
+* :mock
+
 ### Use
 
     twdc.drop( "id1" )
     twdc.drop( "id1" )
     twdc.drop( "id2" )
-    twdc.drop( ["id1", "id2"] )
+    twdc.drop( "id1" )
 
     twdc.count( "id1" )  # => 3
+    twdc.count( "id2" )  # => 1
 
     # after 10 minutes
     twdc.count( "id1" )  # => 0
@@ -64,5 +80,3 @@ It uses the `Rails.cache` accesible
       TimeWindowDropCollector.new do
         client :redis, { :host => "host", :port => "port" }
       end
-
-At the moment this wrapper does not support auto-key-clean so the stored keys will be there until anyone delete them.
