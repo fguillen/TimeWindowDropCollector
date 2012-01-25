@@ -4,11 +4,14 @@ class TimeWindowDropCollector
   		attr_reader :client
 
       def initialize( opts )
-        @client = ::Redis.new( *opts )
+        @client = ::Redis.new( opts )
       end
 
   		def incr( key, expire_time )
-  			client.incr( key )
+        client.multi do
+          client.incr( key )
+          client.expire( key, expire_time )
+        end
   		end
 
   		def values_for( keys )

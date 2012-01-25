@@ -2,6 +2,7 @@ require "test/unit"
 require "mocha"
 require "delorean"
 require "memcache_mock"
+require "redis"
 
 require_relative "../lib/time_window_drop_collector.rb"
 
@@ -10,7 +11,3 @@ class Rails
   def self.cache
   end
 end
-
-class Redis
-end
-
