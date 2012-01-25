@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = TimeWindowDropCollector::VERSION
   s.authors     = ["Fernando Guillen", "Carlos Moutinho"]
   s.email       = ["fguillen.mail@gmail.com", "carlosmoutinho@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/fguillen/TimeWindowDropCollector"
   s.summary     = "Counter storage system for a concrete time window"
   s.description = "Counter storage system for a concrete time window"
 
