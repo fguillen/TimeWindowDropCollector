@@ -1,6 +1,15 @@
 require_relative "test_helper"
 
 class LoggerTest < Test::Unit::TestCase
+  def setup
+    @old_env = ENV["TWDC_DEBUG"]
+    ENV["TWDC_DEBUG"] = "on"
+  end
+
+  def teardown
+    ENV["TWDC_DEBUG"] = @old_env
+  end
+
   def test_log
     IO.any_instance.expects( :puts ).with( "[TWDC 2001-02-01 04:05:06] hello!" )
 

@@ -2,21 +2,21 @@ require_relative "test_helper"
 
 class StorageTest < Test::Unit::TestCase
   def setup
-    @client = mock()
-    @storage = TimeWindowDropCollector::Storage.new( @client, 600, 10 )
+    @wrapper = mock()
+    @storage = TimeWindowDropCollector::Storage.new( @wrapper, 600, 10 )
   end
 
-  def test_time_key_when_time_is_present
+  def test_timestamp_key_when_time_is_present
     timestamp = Time.new( 2001, 2, 3, 4, 5 )
-    assert_equal( "drop_window_key_981169500000", @storage.time_key( "key", timestamp ) )
+    assert_equal( "drop_window_key_981169500000", @storage.timestamp_key( "key", timestamp ) )
   end
 
-  def test_time_key_when_time_is_not_present
+  def test_timestamp_key_when_time_is_not_present
     @storage.stubs( :timestamp ).returns( Time.new( 2012, 4, 3, 2, 1 ))
-    assert_equal( "drop_window_key_1333411260000", @storage.time_key( "key" ))
+    assert_equal( "drop_window_key_1333411260000", @storage.timestamp_key( "key" ))
   end
 
-  def test_time_keys_should_return_10_keys_for_the_last_10_minutes
+  def test_window_keys_should_return_10_keys_for_the_last_10_minutes
     keys = [
       "drop_window_key_1325560800000",
       "drop_window_key_1325560740000",
@@ -31,56 +31,87 @@ class StorageTest < Test::Unit::TestCase
     ]
 
     Delorean.time_travel_to( '2012-01-03 04:20' ) do
-      assert_equal( keys, @storage.time_keys( "key" ))
+      assert_equal( keys, @storage.window_keys( "key" ))
     end
   end
 
   def test_incr
-    @storage.expects( :time_key ).with( "key" ).returns( "time_key" )
-    @client.expects( :incr ).with( "time_key", 600 )
+    @storage.expects( :timestamp_key_multi ).with( ["keys"] ).returns( "timestamp_keys" )
+    @wrapper.expects( :incr ).with( "timestamp_keys", 600 )
 
-    @storage.incr( "key" )
+    @storage.incr( ["keys"] )
   end
 
   def test_count
-    keys = [
-      "drop_window_key_201201031416",
-      "drop_window_key_201201031415",
-      "drop_window_key_201201031414",
-      "drop_window_key_201201031413",
-      "drop_window_key_201201031412"
-    ]
+    @storage.expects( :window_keys_multi ).with( "keys" ).returns( "window_keys" )
+    @wrapper.expects( :get ).with( "window_keys" ).returns( "keys_values" )
+    @storage.expects( :grouping_count ).with( "keys_values" ).returns( "grouping_keys_counts" )
 
-    values = [nil, 1, "2", 3, 4, 5]
-
-    @storage.expects( :time_keys ).with( "key" ).returns( "keys" )
-    @client.expects( :values_for ).with( "keys" ).returns( values )
-
-    assert_equal( 15, @storage.count( "key" ))
+    assert_equal( "grouping_keys_counts", @storage.count( "keys" ))
   end
 
-  def test_count_when_empty_values
-    @storage.stubs( :time_keys )
-    @client.expects( :values_for ).returns( [] )
-    assert_equal( 0, @storage.count( "key" ))
+  def test_grouping_count
+    key_values = {
+      "drop_window_key1_201201031416" => 1,
+      "drop_window_key1_201201031415" => 2,
+      "drop_window_key1_201201031414" => 3,
+      "drop_window_key1_201201031413" => 4,
+      "drop_window_key1_201201031412" => 5,
+      "drop_window_key2_201201031413" => 6,
+      "drop_window_key2_201201031412" => 7
+    }
+
+    key_counts = @storage.grouping_count( key_values )
+
+    assert_equal( 15, key_counts["key1"])
+    assert_equal( 13, key_counts["key2"])
+  end
+
+  def test_grouping_count_with_nil_values
+    key_values = {
+      "drop_window_key1_201201031416" => 1,
+      "drop_window_key1_201201031414" => nil,
+      "drop_window_key2_201201031413" => 6,
+      "drop_window_key2_201201031412" => 7,
+      "drop_window_key3_201201031412" => nil
+    }
+
+    key_counts = @storage.grouping_count( key_values )
+
+    assert_equal( 1, key_counts["key1"])
+    assert_equal( 13, key_counts["key2"])
+    assert_equal( 0, key_counts["key3"])
+  end
+
+    def test_grouping_when_not_key
+    key_values = {
+      "drop_window_key1_201201031416" => 1,
+      "drop_window_key2_201201031412" => 7
+    }
+
+    key_counts = @storage.grouping_count( key_values )
+
+    assert_equal( 1, key_counts["key1"])
+    assert_equal( 7, key_counts["key2"])
+    assert_equal( nil, key_counts["key3"])
   end
 
   def test_integration_count
     client  = TimeWindowDropCollector::Wrapper.instance( :mock )
     storage = TimeWindowDropCollector::Storage.new( client, 600, 10 )
 
-    key_1 = 1
-    key_2 = 2
-    key_3 = 3
+    storage.incr( ["key_1"] )
+    storage.incr( ["key_2"] )
+    storage.incr( ["key_3"] )
+    storage.incr( ["key_2"] )
+    storage.incr( ["key_2", "key_1"] )
 
-    storage.incr( key_1 )
-    storage.incr( key_2 )
-    storage.incr( key_3 )
-    storage.incr( key_2 )
+    keys_values = storage.count( ["key_1", "key_2", "key_3", "key_4"] )
 
-    assert_equal( 1, storage.count( key_1 ))
-    assert_equal( 2, storage.count( key_2 ))
-    assert_equal( 1, storage.count( key_3 ))
+    assert_equal( 2, keys_values["key_1"])
+    assert_equal( 3, keys_values["key_2"])
+    assert_equal( 1, keys_values["key_3"])
+    assert_equal( nil, keys_values["key_4"])
   end
 
   def test_slice_start_timestamp
@@ -156,79 +187,77 @@ class StorageTest < Test::Unit::TestCase
     client  = TimeWindowDropCollector::Wrapper.instance( :mock )
     storage = TimeWindowDropCollector::Storage.new( client, 600, 10 )
 
-    key_1 = 1
-
     Delorean.time_travel_to( '2012-01-03 11:00' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:01' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:02' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:03' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:04' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:05' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:06' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:07' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:08' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:09' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:10' ) do
-      storage.incr( key_1 )
+      storage.incr( ["key_1"] )
     end
 
     # counters
     Delorean.time_travel_to( '2012-01-03 10:59' ) do
-      assert_equal( 0, storage.count( key_1 ))
+      assert_equal( nil, storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:00' ) do
-      assert_equal( 1, storage.count( key_1 ))
+      assert_equal( 1, storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:05' ) do
-      assert_equal( 6, storage.count( key_1 ))
+      assert_equal( 6, storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:10' ) do
-      assert_equal( 10, storage.count( key_1 ))
+      assert_equal( 10,  storage.count( ["key_1"] )["key_1"])
     end
 
     Delorean.time_travel_to( '2012-01-03 11:15' ) do
-      assert_equal( 5, storage.count( key_1 ))
+      assert_equal( 5, storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:19' ) do
-      assert_equal( 1, storage.count( key_1 ))
+      assert_equal( 1,  storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:20' ) do
-      assert_equal( 0, storage.count( key_1 ))
+      assert_equal( nil,  storage.count( ["key_1"] )["key_1"] )
     end
   end
 end

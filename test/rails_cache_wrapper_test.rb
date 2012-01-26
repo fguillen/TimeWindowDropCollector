@@ -14,15 +14,15 @@ class MemcacheWrapperTest < Test::Unit::TestCase
 
   def test_incr
     wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
-    wrapper.client.expects( :read ).with( "key" ).returns( 2 )
-    wrapper.client.expects( :write ).with( "key", 3, :expires_in => "expire_time" )
+    wrapper.client.expects( :increment ).with( "key1", 1, :expires_in => "expire_time" )
+    wrapper.client.expects( :increment ).with( "key2", 1, :expires_in => "expire_time" )
 
-    wrapper.incr( "key", "expire_time" )
+    wrapper.incr( ["key1", "key2"], "expire_time" )
   end
 
   def test_values_for
     wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
-    wrapper.client.expects( :read_multi ).with( "keys" ).returns( {:a => 1, :b => 2} )
-    assert_equal( [1, 2], wrapper.values_for( "keys" ))
+    wrapper.client.expects( :read_multi ).with( "keys" ).returns( "keys_values" )
+    assert_equal( "keys_values", wrapper.get( "keys" ))
   end
 end

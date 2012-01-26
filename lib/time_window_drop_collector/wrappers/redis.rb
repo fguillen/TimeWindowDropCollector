@@ -7,15 +7,25 @@ class TimeWindowDropCollector
         @client = ::Redis.new( opts )
       end
 
-  		def incr( key, expire_time )
+  		def incr( keys, expire_time )
         client.multi do
-          client.incr( key )
-          client.expire( key, expire_time )
+          keys.each do |key|
+            client.incr( key )
+            client.expire( key, expire_time )
+          end
         end
   		end
 
-  		def values_for( keys )
-  			client.mget( *keys )
+  		def get( keys )
+  			values = client.mget( *keys )
+
+        result = {}
+
+        keys.each_with_index do |key, i|
+          result[key] = values[i]
+        end
+
+        result
   		end
   	end
   end

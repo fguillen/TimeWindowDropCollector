@@ -21,10 +21,13 @@ class RedisWrapperTest < Test::Unit::TestCase
     Redis.expects( :new ).returns( RedisMock.new )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
 
-    wrapper.client.expects( :incr ).with( "key" )
-    wrapper.client.expects( :expire ).with( "key", "expire_time" )
+    wrapper.client.expects( :incr ).with( "key1" )
+    wrapper.client.expects( :expire ).with( "key1", "expire_time" )
 
-    wrapper.incr( "key", "expire_time" )
+    wrapper.client.expects( :incr ).with( "key2" )
+    wrapper.client.expects( :expire ).with( "key2", "expire_time" )
+
+    wrapper.incr( ["key1", "key2"], "expire_time" )
   end
 
   def test_incr_agregates_commands_under_multi
@@ -36,12 +39,12 @@ class RedisWrapperTest < Test::Unit::TestCase
     wrapper.incr( nil, nil )
   end
 
-  def test_values_for
+  def test_get
     Redis.expects( :new ).returns( RedisMock.new )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
 
     wrapper.client.expects( :mget ).with( "key1", "key2" ).returns( [1, 2] )
 
-    assert_equal( [1, 2], wrapper.values_for( ["key1", "key2"] ))
+    assert_equal( { "key1" => 1, "key2" => 2 }, wrapper.get( ["key1", "key2"] ))
   end
 end

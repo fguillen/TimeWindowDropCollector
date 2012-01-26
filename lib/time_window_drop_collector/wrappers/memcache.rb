@@ -7,12 +7,16 @@ class TimeWindowDropCollector
         @client = Dalli::Client.new( opts )
       end
 
-      def incr( key, expire_time )
-        client.incr( key, 1, expire_time, 1 )
+      def incr( keys, expire_time )
+        client.multi do
+          keys.each do |key|
+            client.incr( key, 1, expire_time, 1 )
+          end
+        end
       end
 
-      def values_for( keys )
-        client.get_multi( keys ).values
+      def get( keys )
+        client.get_multi( keys )
       end
     end
   end

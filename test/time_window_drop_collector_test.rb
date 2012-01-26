@@ -2,7 +2,6 @@ require_relative "test_helper"
 
 class TimeWindowDropCollectorTest < Test::Unit::TestCase
   def setup
-    @twdc = TimeWindowDropCollector::Logger.stubs( :log )
   end
 
   def test_initialize_with_empty_config
@@ -34,7 +33,7 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
 
   def test_drop
     storage = mock()
-    storage.expects( :incr ).with( "key" )
+    storage.expects( :incr ).with( ["key"] )
 
     twdc = TimeWindowDropCollector.new
     twdc.stubs( :storage ).returns( storage )
@@ -44,12 +43,12 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
 
   def test_count
     storage = mock()
-    storage.expects( :count ).with( "key" )
+    storage.expects( :count ).with( ["key"] ).returns( { "key" => 10 } )
 
     twdc = TimeWindowDropCollector.new
     twdc.stubs( :storage ).returns( storage )
 
-    twdc.count( "key" )
+    assert_equal( 10, twdc.count( "key" ) )
   end
 
   def test_integration_new
@@ -66,5 +65,46 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
 
     assert_equal( 100, twdc.storage.window )
     assert_equal( 20, twdc.storage.slices )
+  end
+
+  def test_integration_drop_and_count
+    twdc = TimeWindowDropCollector.new { client :mock }
+
+    twdc.drop( "key_1" )
+    twdc.drop( "key_1" )
+    twdc.drop( "key_2" )
+    twdc.drop( "key_2" )
+    twdc.drop( ["key_2"] )
+    twdc.drop( ["key_3", "key_4", "key_5"] )
+
+    assert_equal( 2, twdc.count( "key_1" ) )
+    assert_equal( 3, twdc.count( "key_2" ) )
+    assert_equal( 1, twdc.count( "key_3" ) )
+    assert_equal( 1, twdc.count( "key_4" ) )
+    assert_equal( 1, twdc.count( "key_5" ) )
+    assert_equal( 0, twdc.count( "key_6" ) )
+
+    assert_equal( 2, twdc.count( ["key_1", "key_2"] )["key_1"] )
+    assert_equal( 3, twdc.count( ["key_1", "key_2"] )["key_2"] )
+    assert_equal( 0, twdc.count( ["key_6"] )["key_6"] )
+  end
+
+  def test_integration_drop_array_keys
+    twdc = TimeWindowDropCollector.new { client :mock }
+
+    twdc.drop( ["key_1", "key_2"] )
+
+    assert_equal( 1, twdc.count( "key_1" ) )
+    assert_equal( 1, twdc.count( "key_2" ) )
+  end
+
+  def test_integration_drop_and_count_with_numerical_keys
+    twdc = TimeWindowDropCollector.new { client :mock }
+
+    twdc.drop( 1000 )
+    twdc.drop( [1001])
+
+    assert_equal( 1, twdc.count( 1000 ) )
+    assert_equal( 1, twdc.count( 1001 ) )
   end
 end
