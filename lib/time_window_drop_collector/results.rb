@@ -8,4 +8,8 @@ class TimeWindowDropCollector::Results
   def []( key )
     keys_values[key].to_i
   end
+
+  def to_s
+    keys_values.to_s
+  end
 end
