@@ -47,4 +47,13 @@ class RedisWrapperTest < Test::Unit::TestCase
 
     assert_equal( { "key1" => 1, "key2" => 2 }, wrapper.get( ["key1", "key2"] ))
   end
+
+  def test_reset
+    client = mock
+    Redis.expects( :new ).returns( client )
+    wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
+    client.expects( :quit )
+    wrapper.reset
+  end
+
 end

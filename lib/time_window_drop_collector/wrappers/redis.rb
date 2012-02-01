@@ -27,6 +27,10 @@ class TimeWindowDropCollector
 
         result
   		end
+
+      def reset
+        client.quit
+      end
   	end
   end
 end

@@ -19,4 +19,10 @@ class MockWrapperTest < Test::Unit::TestCase
     wrapper.client.expects( :get_multi ).with( "keys" ).returns( "keys_values" )
     assert_equal( "keys_values", wrapper.get( "keys" ))
   end
+
+  def test_reset
+    wrapper = TimeWindowDropCollector::Wrappers::Mock.new( ["arg1"] )
+    wrapper.client.expects( :flush )
+    wrapper.reset
+  end
 end

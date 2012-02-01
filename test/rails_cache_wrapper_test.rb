@@ -25,4 +25,10 @@ class MemcacheWrapperTest < Test::Unit::TestCase
     wrapper.client.expects( :read_multi ).with( "keys" ).returns( "keys_values" )
     assert_equal( "keys_values", wrapper.get( "keys" ))
   end
+
+  def test_reset
+    wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
+    wrapper.client.expects( :reset )
+    wrapper.reset
+  end
 end
