@@ -18,6 +18,10 @@ class TimeWindowDropCollector
       def get( keys )
         client.get_multi( keys )
       end
+
+      def reset
+        client.reset
+      end
     end
   end
 end
