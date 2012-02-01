@@ -55,4 +55,8 @@ class TimeWindowDropCollector
 
     result
   end
+
+  def reset
+    wrapper.client.reset
+  end
 end

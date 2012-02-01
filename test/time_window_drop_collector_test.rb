@@ -107,4 +107,12 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
     assert_equal( 1, twdc.count( 1000 ) )
     assert_equal( 1, twdc.count( 1001 ) )
   end
+
+  def test_reset
+    twdc = TimeWindowDropCollector.new { client :mock }
+
+    twdc.wrapper.client.expects(:reset)
+
+    twdc.reset
+  end
 end
