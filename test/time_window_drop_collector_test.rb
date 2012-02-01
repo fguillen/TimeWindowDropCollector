@@ -111,7 +111,7 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
   def test_reset
     twdc = TimeWindowDropCollector.new { client :mock }
 
-    twdc.wrapper.client.expects(:reset)
+    twdc.wrapper.expects(:reset)
 
     twdc.reset
   end
