@@ -8,7 +8,7 @@ class TimeWindowDropCollector
       end
 
   		def incr( keys, expire_time )
-        client.multi do
+        client.pipelined do
           keys.each do |key|
             client.incr( key )
             client.expire( key, expire_time )

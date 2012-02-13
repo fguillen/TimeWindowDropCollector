@@ -1,12 +1,15 @@
 require_relative "test_helper"
 
 class RedisMock
-  def multi(&block)
+  def multi
     yield
   end
   def incr(key);end
   def expire(key);end
   def mget(keys);end
+  def pipelined
+    yield
+  end
 end
 
 class RedisWrapperTest < Test::Unit::TestCase
@@ -30,11 +33,11 @@ class RedisWrapperTest < Test::Unit::TestCase
     wrapper.incr( ["key1", "key2"], "expire_time" )
   end
 
-  def test_incr_agregates_commands_under_multi
+  def test_incr_agregates_commands_under_pipelined
     Redis.expects( :new ).returns( RedisMock.new )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
 
-    wrapper.client.expects( :multi )
+    wrapper.client.expects( :pipelined )
 
     wrapper.incr( nil, nil )
   end
