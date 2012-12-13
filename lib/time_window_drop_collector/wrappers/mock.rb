@@ -9,7 +9,7 @@ class TimeWindowDropCollector
 
 			def incr( keys, expire_time, amount=1 )
 				keys.each do |key|
-					client.incr( key, 1, nil, amount )
+					client.incr( key, amount, nil, 1 )
 				end
 			end
 
