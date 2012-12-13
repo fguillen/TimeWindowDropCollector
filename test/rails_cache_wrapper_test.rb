@@ -14,14 +14,6 @@ class MemcacheWrapperTest < Test::Unit::TestCase
 
   def test_incr
     wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
-    wrapper.client.expects( :increment ).with( "key1", 1, :expires_in => "expire_time" )
-    wrapper.client.expects( :increment ).with( "key2", 1, :expires_in => "expire_time" )
-
-    wrapper.incr( ["key1", "key2"], "expire_time" )
-  end
-
-  def test_incr_with_custom_amount
-    wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
     wrapper.client.expects( :increment ).with( "key1", 5, :expires_in => "expire_time" )
     wrapper.client.expects( :increment ).with( "key2", 5, :expires_in => "expire_time" )
 

@@ -7,7 +7,7 @@ class TimeWindowDropCollector
 				@client = Rails.cache
 			end
 
-			def incr( keys, expire_time, amount=1 )
+			def incr( keys, expire_time, amount )
 				keys.each do |key|
 					client.increment( key, amount, :expires_in => expire_time )
 				end
