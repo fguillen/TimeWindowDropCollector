@@ -37,9 +37,16 @@ class StorageTest < Test::Unit::TestCase
 
   def test_incr
     @storage.expects( :timestamp_key_multi ).with( ["keys"] ).returns( "timestamp_keys" )
-    @wrapper.expects( :incr ).with( "timestamp_keys", 600 )
+    @wrapper.expects( :incr ).with( "timestamp_keys", 600, 1 )
 
     @storage.incr( ["keys"] )
+  end
+
+  def test_incr_with_val
+    @storage.expects( :timestamp_key_multi ).with( ["keys"] ).returns( "timestamp_keys" )
+    @wrapper.expects( :incr ).with( "timestamp_keys", 600, 30.5 )
+
+    @storage.incr( ["keys"], 30.5 )
   end
 
   def test_count

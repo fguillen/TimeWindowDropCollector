@@ -7,10 +7,10 @@ class TimeWindowDropCollector
         @client = ::Redis.new( opts )
       end
 
-  		def incr( keys, expire_time )
+  		def incr( keys, expire_time, amount=1)
         client.pipelined do
           keys.each do |key|
-            client.incr( key )
+            client.incrby( key, amount )
             client.expire( key, expire_time )
           end
         end

@@ -7,9 +7,9 @@ class TimeWindowDropCollector
 				@client = MemcacheMock.new
 			end
 
-			def incr( keys, expire_time )
+			def incr( keys, expire_time, amount=1 )
 				keys.each do |key|
-					client.incr( key, 1, nil, 1 )
+					client.incr( key, 1, nil, amount )
 				end
 			end
 

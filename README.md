@@ -43,9 +43,9 @@ Can be:
     twdc.drop( "id1" )
     twdc.drop( "id1" )
     twdc.drop( "id2" )
-    twdc.drop( "id1" )
+    twdc.drop( "id1", 4 )
 
-    twdc.count( "id1" )  # => 3
+    twdc.count( "id1" )  # => 6
     twdc.count( "id2" )  # => 1
 
     # after 10 minutes
@@ -80,3 +80,4 @@ It uses the `Rails.cache` accesible
       TimeWindowDropCollector.new do
         client :redis, { :host => "host", :port => "port" }
       end
+

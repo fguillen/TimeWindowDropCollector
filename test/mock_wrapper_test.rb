@@ -14,6 +14,13 @@ class MockWrapperTest < Test::Unit::TestCase
     wrapper.incr( ["key1", "key2"], "expire_time" )
   end
 
+  def test_incr_with_custom_amount
+    wrapper = TimeWindowDropCollector::Wrappers::Mock.new( ["arg1"] )
+    wrapper.client.expects( :incr ).with( "key1", 1, nil, 2 )
+    wrapper.client.expects( :incr ).with( "key2", 1, nil, 2 )
+    wrapper.incr( ["key1", "key2"], "expire_time", 2 )
+  end
+
   def test_values_for
     wrapper = TimeWindowDropCollector::Wrappers::Mock.new( ["arg1"] )
     wrapper.client.expects( :get_multi ).with( "keys" ).returns( "keys_values" )
