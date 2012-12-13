@@ -37,7 +37,7 @@ class TimeWindowDropCollector
     keys = [keys] unless keys.is_a? Array
     keys = keys.map(&:to_s)
 
-    TimeWindowDropCollector::Logger.log "DROP keys: #{keys.join(", ")}"
+    TimeWindowDropCollector::Logger.log "DROP keys: #{keys.join(", ")}, amount: #{amount}"
     storage.incr( keys, amount )
   end
 
