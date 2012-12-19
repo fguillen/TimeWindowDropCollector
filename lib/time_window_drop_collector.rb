@@ -33,12 +33,12 @@ class TimeWindowDropCollector
     @storage = TimeWindowDropCollector::Storage.new( wrapper, config[:window], config[:slices] )
   end
 
-  def drop( keys )
+  def drop( keys, amount=1 )
     keys = [keys] unless keys.is_a? Array
     keys = keys.map(&:to_s)
 
-    TimeWindowDropCollector::Logger.log "DROP keys: #{keys.join(", ")}"
-    storage.incr( keys )
+    TimeWindowDropCollector::Logger.log "DROP keys: #{keys.join(", ")}, amount: #{amount}"
+    storage.incr( keys, amount )
   end
 
   def count( orig_keys )

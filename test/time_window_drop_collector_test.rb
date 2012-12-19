@@ -33,12 +33,22 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
 
   def test_drop
     storage = mock()
-    storage.expects( :incr ).with( ["key"] )
+    storage.expects( :incr ).with( ["key"], 1 )
 
     twdc = TimeWindowDropCollector.new
     twdc.stubs( :storage ).returns( storage )
 
     twdc.drop( "key" )
+  end
+
+  def test_drop_with_custom_amount
+    storage = mock()
+    storage.expects( :incr ).with( ["key"], 15 )
+
+    twdc = TimeWindowDropCollector.new
+    twdc.stubs( :storage ).returns( storage )
+
+    twdc.drop( "key", 15 )
   end
 
   def test_count
