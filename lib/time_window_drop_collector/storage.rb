@@ -9,8 +9,8 @@ class TimeWindowDropCollector::Storage
     @slices  = slices
   end
 
-  def incr( keys )
-    wrapper.incr( timestamp_key_multi( keys ), window )
+  def incr( keys, amount=1 )
+    wrapper.incr( timestamp_key_multi( keys ), window, amount )
   end
 
   def count( keys )
