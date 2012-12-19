@@ -4,7 +4,7 @@ class RedisMock
   def multi
     yield
   end
-  def incr(key);end
+  def incrby(key,amount);end
   def expire(key);end
   def mget(keys);end
   def pipelined
@@ -24,13 +24,13 @@ class RedisWrapperTest < Test::Unit::TestCase
     Redis.expects( :new ).returns( RedisMock.new )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
 
-    wrapper.client.expects( :incr ).with( "key1" )
+    wrapper.client.expects( :incrby ).with( "key1", 10 )
     wrapper.client.expects( :expire ).with( "key1", "expire_time" )
 
-    wrapper.client.expects( :incr ).with( "key2" )
+    wrapper.client.expects( :incrby ).with( "key2", 10 )
     wrapper.client.expects( :expire ).with( "key2", "expire_time" )
 
-    wrapper.incr( ["key1", "key2"], "expire_time" )
+    wrapper.incr( ["key1", "key2"], "expire_time", 10 )
   end
 
   def test_incr_agregates_commands_under_pipelined
@@ -39,7 +39,7 @@ class RedisWrapperTest < Test::Unit::TestCase
 
     wrapper.client.expects( :pipelined )
 
-    wrapper.incr( nil, nil )
+    wrapper.incr( nil, nil, nil )
   end
 
   def test_get
