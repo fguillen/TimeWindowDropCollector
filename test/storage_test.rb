@@ -57,6 +57,10 @@ class StorageTest < Test::Unit::TestCase
     assert_equal( "grouping_keys_counts", @storage.count( "keys" ))
   end
 
+  def test_count_with_no_keys
+    assert_equal({}, @storage.count([]))
+  end
+
   def test_grouping_count
     key_values = {
       "drop_window_key1_201201031416" => 1,

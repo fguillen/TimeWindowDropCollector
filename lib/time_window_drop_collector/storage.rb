@@ -14,6 +14,8 @@ class TimeWindowDropCollector::Storage
   end
 
   def count( keys )
+    return {} if keys.empty?
+
     window_keys = window_keys_multi( keys )
     keys_values = wrapper.get( window_keys )
 
