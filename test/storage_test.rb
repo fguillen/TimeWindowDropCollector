@@ -7,13 +7,13 @@ class StorageTest < Test::Unit::TestCase
   end
 
   def test_timestamp_key_when_time_is_present
-    timestamp = Time.new( 2001, 2, 3, 4, 5 )
-    assert_equal( "drop_window_key_981169500000", @storage.timestamp_key( "key", timestamp ) )
+    timestamp = Time.new(2001, 2, 3, 4, 5, 0, "+01:00")
+    assert_equal("drop_window_key_981169500000", @storage.timestamp_key("key", timestamp))
   end
 
   def test_timestamp_key_when_time_is_not_present
-    @storage.stubs( :timestamp ).returns( Time.new( 2012, 4, 3, 2, 1 ))
-    assert_equal( "drop_window_key_1333411260000", @storage.timestamp_key( "key" ))
+    @storage.stubs(:timestamp).returns(Time.new(2012, 4, 3, 2, 1, 0, "+02:00"))
+    assert_equal("drop_window_key_1333411260000", @storage.timestamp_key("key"))
   end
 
   def test_window_keys_should_return_10_keys_for_the_last_10_minutes
@@ -30,8 +30,8 @@ class StorageTest < Test::Unit::TestCase
       "drop_window_key_1325560260000"
     ]
 
-    Delorean.time_travel_to( '2012-01-03 04:20' ) do
-      assert_equal( keys, @storage.window_keys( "key" ))
+    Delorean.time_travel_to('2012-01-03 04:20 +01:00') do
+      assert_equal(keys, @storage.window_keys("key"))
     end
   end
 
@@ -126,19 +126,19 @@ class StorageTest < Test::Unit::TestCase
   end
 
   def test_slice_start_timestamp
-    storage = TimeWindowDropCollector::Storage.new( nil, 100, 10 )
-    time    = Time.new( 2001, 2, 3, 4, 5 )
+    storage = TimeWindowDropCollector::Storage.new(nil, 100, 10)
+    time    = Time.new(2001, 2, 3, 4, 5, 0, '+01:00')
 
-    assert_equal( 981169500000, storage.slice_start_timestamp( time ) )
-    assert_equal( 981169500000, storage.slice_start_timestamp( time + 1 ) )
-    assert_equal( 981169500000, storage.slice_start_timestamp( time + 9 ) )
-    assert_equal( 981169520000, storage.slice_start_timestamp( time + 25 ) )
-    assert_equal( 981169600000, storage.slice_start_timestamp( time + 100 ) )
+    assert_equal(981169500000, storage.slice_start_timestamp(time))
+    assert_equal(981169500000, storage.slice_start_timestamp(time + 1))
+    assert_equal(981169500000, storage.slice_start_timestamp(time + 9))
+    assert_equal(981169520000, storage.slice_start_timestamp(time + 25))
+    assert_equal(981169600000, storage.slice_start_timestamp(time + 100))
   end
 
   def test_slice_start_timestamp_with_slice_sizes_no_integer
     storage = TimeWindowDropCollector::Storage.new( nil, 100, 12 )
-    time    = Time.new( 2001, 2, 3, 4, 5 )
+    time    = Time.new( 2001, 2, 3, 4, 5, 0,'+01:00')
 
     assert_equal( 981169493317, storage.slice_start_timestamp( time ) )
     assert_equal( 981169493317, storage.slice_start_timestamp( time + 1 ) )
@@ -148,14 +148,14 @@ class StorageTest < Test::Unit::TestCase
   end
 
   def test_slice_start_timestamp_with_slice_size_less_than_a_second
-    storage = TimeWindowDropCollector::Storage.new( nil, 100, 101 )
-    time    = Time.new( 2001, 2, 3, 4, 5 )
+    storage = TimeWindowDropCollector::Storage.new(nil, 100, 101)
+    time    = Time.new( 2001, 2, 3, 4, 5, 0, '+01:00')
 
-    assert_equal( 981169499970, storage.slice_start_timestamp( time ) )
-    assert_equal( 981169500960, storage.slice_start_timestamp( time + 1 ) )
-    assert_equal( 981169508880, storage.slice_start_timestamp( time + 9 ) )
-    assert_equal( 981169524720, storage.slice_start_timestamp( time + 25 ) )
-    assert_equal( 981169599960, storage.slice_start_timestamp( time + 100 ) )
+    assert_equal(981169499970, storage.slice_start_timestamp(time))
+    assert_equal(981169500960, storage.slice_start_timestamp(time + 1))
+    assert_equal(981169508880, storage.slice_start_timestamp(time + 9))
+    assert_equal(981169524720, storage.slice_start_timestamp(time + 25))
+    assert_equal(981169599960, storage.slice_start_timestamp(time + 100))
   end
 
   def test_window_size_consistency
