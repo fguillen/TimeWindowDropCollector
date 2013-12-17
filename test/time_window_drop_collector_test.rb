@@ -51,6 +51,26 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
     twdc.drop( "key", 15 )
   end
 
+  def test_pick
+    storage = mock()
+    storage.expects( :decr ).with( "time", ["key"], 1 )
+
+    twdc = TimeWindowDropCollector.new
+    twdc.stubs( :storage ).returns( storage )
+
+    twdc.pick( "time", "key" )
+  end
+
+  def test_pick_with_custom_amount
+    storage = mock()
+    storage.expects( :decr ).with( "time", ["key"], 15 )
+
+    twdc = TimeWindowDropCollector.new
+    twdc.stubs( :storage ).returns( storage )
+
+    twdc.pick( "time", "key", 15 )
+  end
+
   def test_count
     storage = mock()
     storage.expects( :count ).with( ["key"] ).returns( { "key" => 10 } )
@@ -77,10 +97,10 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
     assert_equal( 20, twdc.storage.slices )
   end
 
-  def test_integration_drop_and_count
+  def test_integration_drop_and_pick_and_count
     twdc = TimeWindowDropCollector.new { client :mock }
 
-    twdc.drop( "key_1" )
+    ts = twdc.drop( "key_1" )
     twdc.drop( "key_1" )
     twdc.drop( "key_2" )
     twdc.drop( "key_2" )
@@ -97,25 +117,50 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
     assert_equal( 2, twdc.count( ["key_1", "key_2"] )["key_1"] )
     assert_equal( 3, twdc.count( ["key_1", "key_2"] )["key_2"] )
     assert_equal( 0, twdc.count( ["key_6"] )["key_6"] )
+
+    twdc.pick(ts, "key_1" )
+    assert_equal( 1, twdc.count( "key_1" ) )
+
+    twdc.pick(ts, "key_2" )
+    assert_equal( 2, twdc.count( "key_2" ) )
+
+    twdc.pick(ts, ["key_2"] )
+    assert_equal( 1, twdc.count( "key_2" ) )
+
+    twdc.pick(ts, ["key_3", "key_4", "key_5"] )
+    assert_equal( 0, twdc.count( "key_3" ) )
+    assert_equal( 0, twdc.count( "key_4" ) )
+    assert_equal( 0, twdc.count( "key_5" ) )
   end
 
-  def test_integration_drop_array_keys
+  def test_integration_drop_and_pick_array_keys
     twdc = TimeWindowDropCollector.new { client :mock }
 
-    twdc.drop( ["key_1", "key_2"] )
+    ts = twdc.drop( ["key_1", "key_2"] )
 
     assert_equal( 1, twdc.count( "key_1" ) )
     assert_equal( 1, twdc.count( "key_2" ) )
+
+    twdc.pick(ts, ["key_1", "key_2"] )
+
+    assert_equal( 0, twdc.count( "key_1" ) )
+    assert_equal( 0, twdc.count( "key_2" ) )
   end
 
-  def test_integration_drop_and_count_with_numerical_keys
+  def test_integration_drop_and_pick_and_count_with_numerical_keys
     twdc = TimeWindowDropCollector.new { client :mock }
 
-    twdc.drop( 1000 )
+    ts = twdc.drop( 1000 )
     twdc.drop( [1001])
 
     assert_equal( 1, twdc.count( 1000 ) )
     assert_equal( 1, twdc.count( 1001 ) )
+
+    twdc.pick( ts, 1000 )
+    twdc.pick( ts, [1001])
+
+    assert_equal( 0, twdc.count( 1000 ) )
+    assert_equal( 0, twdc.count( 1001 ) )
   end
 
   def test_reset

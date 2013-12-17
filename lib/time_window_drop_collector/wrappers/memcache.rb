@@ -15,6 +15,14 @@ class TimeWindowDropCollector
         end
       end
 
+      def decr( keys, expire_time, amount )
+        client.multi do
+          keys.each do |key|
+            client.decr( key, amount, expire_time, -1 )
+          end
+        end
+      end
+
       def get( keys )
         client.get_multi( keys )
       end

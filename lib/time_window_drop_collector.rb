@@ -41,6 +41,15 @@ class TimeWindowDropCollector
     storage.incr( keys, amount )
   end
 
+  def pick( time, keys, amount=1)
+    keys = [keys] unless keys.is_a? Array
+    keys = keys.map(&:to_s)
+
+    TimeWindowDropCollector::Logger.log "PICK keys: #{keys.join(", ")}, amount: #{amount}"
+
+    storage.decr( time, keys, amount )
+  end
+
   def count( orig_keys )
     keys = orig_keys.is_a?(Array) ? orig_keys : [orig_keys]
     keys = keys.map(&:to_s)

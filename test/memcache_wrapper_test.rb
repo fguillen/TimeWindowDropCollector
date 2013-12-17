@@ -12,4 +12,10 @@ class MemcacheWrapperTest < Test::Unit::TestCase
     wrapper.client.expects( :incr ).with( "key", 5, "expire_time", 1)
     wrapper.incr( ["key"], "expire_time", 5 )
   end
+
+  def test_decr
+    wrapper = TimeWindowDropCollector::Wrappers::Memcache.new( ["arg1"] )
+    wrapper.client.expects( :decr ).with( "key", 5, "expire_time", -1)
+    wrapper.decr( ["key"], "expire_time", 5 )
+  end
 end

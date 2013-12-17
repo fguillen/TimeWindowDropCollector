@@ -10,7 +10,13 @@ class TimeWindowDropCollector::Storage
   end
 
   def incr( keys, amount=1 )
-    wrapper.incr( timestamp_key_multi( keys ), window, amount )
+    now = Time.now
+    wrapper.incr( timestamp_key_multi( keys, now), window, amount )
+    now
+  end
+
+  def decr( timestamp, keys, amount=1 )
+    wrapper.decr(timestamp_key_multi( keys, timestamp), window, amount)
   end
 
   def count( keys )
