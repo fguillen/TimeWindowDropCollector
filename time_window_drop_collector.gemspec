@@ -5,8 +5,8 @@ require "time_window_drop_collector/version"
 Gem::Specification.new do |s|
   s.name        = "time_window_drop_collector"
   s.version     = TimeWindowDropCollector::VERSION
-  s.authors     = ["Fernando Guillen", "Carlos Moutinho"]
-  s.email       = ["fguillen.mail@gmail.com", "carlosmoutinho@gmail.com"]
+  s.authors     = ["Fernando Guillen", "Carlos Moutinho", "Krzysztof Jablonski"]
+  s.email       = ["fguillen.mail@gmail.com", "carlosmoutinho@gmail.com", "jablko@gmail.com"]
   s.homepage    = "https://github.com/fguillen/TimeWindowDropCollector"
   s.summary     = "Counter storage system for a concrete time window"
   s.description = "Counter storage system for a concrete time window"
