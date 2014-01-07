@@ -15,22 +15,18 @@ module TimeWindowDropCollector::Utils
     "drop_window_#{key}_#{slice_start_timestamp( time )}"
   end
 
-  def timestamp_key_multi( keys )
-    now = timestamp
-
-    keys.map { |key| timestamp_key( key, now ) }.flatten
+  def timestamp_key_multi( keys, time = timestamp)
+    keys.map { |key| timestamp_key( key, time) }.flatten
   end
 
-  def window_keys( key, now = timestamp )
+  def window_keys( key, time = timestamp )
     ( 0..( slices - 1 ) ).map{ |i|
-      timestamp_key( key, now - ( ( i*slice_milliseconds ) / 1000 ) )
+      timestamp_key( key, time - ( ( i*slice_milliseconds ) / 1000 ) )
     }
   end
 
   def window_keys_multi( keys )
-    now = timestamp
-
-    keys.map { |key| window_keys( key, now ) }.flatten
+    keys.map { |key| window_keys( key ) }.flatten
   end
 
   def timestamp

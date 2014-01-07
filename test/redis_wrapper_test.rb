@@ -33,6 +33,19 @@ class RedisWrapperTest < Test::Unit::TestCase
     wrapper.incr( ["key1", "key2"], "expire_time", 10 )
   end
 
+  def test_decr
+    Redis.expects( :new ).returns( RedisMock.new )
+    wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )
+
+    wrapper.client.expects( :decrby ).with( "key1", 10 )
+    wrapper.client.expects( :expire ).with( "key1", "expire_time" )
+
+    wrapper.client.expects( :decrby ).with( "key2", 10 )
+    wrapper.client.expects( :expire ).with( "key2", "expire_time" )
+
+    wrapper.decr( ["key1", "key2"], "expire_time", 10 )
+  end
+
   def test_incr_agregates_commands_under_pipelined
     Redis.expects( :new ).returns( RedisMock.new )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( nil )

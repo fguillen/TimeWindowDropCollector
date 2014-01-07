@@ -43,10 +43,13 @@ Can be:
     twdc.drop( "id1" )
     twdc.drop( "id1" )
     twdc.drop( "id2" )
-    twdc.drop( "id1", 4 )
+    ts = twdc.drop( "id1", 4 )
 
     twdc.count( "id1" )  # => 6
     twdc.count( "id2" )  # => 1
+
+    twdc.pick( ts, "id1", 2)
+    twdc.count( "id1" )  # => 4
 
     # after 10 minutes
     twdc.count( "id1" )  # => 0

@@ -36,17 +36,35 @@ class StorageTest < Test::Unit::TestCase
   end
 
   def test_incr
-    @storage.expects( :timestamp_key_multi ).with( ["keys"] ).returns( "timestamp_keys" )
+    Time.expects(:now).returns('now')
+    @storage.expects( :timestamp_key_multi ).with( ["keys"], 'now' ).returns( "timestamp_keys" )
     @wrapper.expects( :incr ).with( "timestamp_keys", 600, 1 )
 
-    @storage.incr( ["keys"] )
+    result = @storage.incr( ["keys"] )
+    assert_equal result, 'now'
   end
 
   def test_incr_with_val
-    @storage.expects( :timestamp_key_multi ).with( ["keys"] ).returns( "timestamp_keys" )
+    Time.expects(:now).returns('now')
+    @storage.expects( :timestamp_key_multi ).with( ["keys"], 'now' ).returns( "timestamp_keys" )
     @wrapper.expects( :incr ).with( "timestamp_keys", 600, 30.5 )
 
-    @storage.incr( ["keys"], 30.5 )
+    result = @storage.incr( ["keys"], 30.5 )
+    assert_equal result, 'now'
+  end
+
+  def test_decr
+    @storage.expects( :timestamp_key_multi ).with( ["keys"], 'now' ).returns( "timestamp_keys" )
+    @wrapper.expects( :decr ).with( "timestamp_keys", 600, 1 )
+
+    @storage.decr( 'now', ["keys"] )
+  end
+
+  def test_decr_with_val
+    @storage.expects( :timestamp_key_multi ).with( ["keys"], 'now' ).returns( "timestamp_keys" )
+    @wrapper.expects( :decr ).with( "timestamp_keys", 600, 30.5 )
+
+    @storage.decr( 'now', ["keys"], 30.5 )
   end
 
   def test_count

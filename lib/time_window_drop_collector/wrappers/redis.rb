@@ -1,23 +1,32 @@
 class TimeWindowDropCollector
   module Wrappers
     class Redis
-  		attr_reader :client
+      attr_reader :client
 
       def initialize( opts )
         @client = ::Redis.new( opts )
       end
 
-  		def incr( keys, expire_time, amount )
+      def incr( keys, expire_time, amount )
         client.pipelined do
           keys.each do |key|
             client.incrby( key, amount )
             client.expire( key, expire_time )
           end
         end
-  		end
+      end
 
-  		def get( keys )
-  			values = client.mget( *keys )
+      def decr( keys, expire_time, amount )
+        client.pipelined do
+          keys.each do |key|
+            client.decrby( key, amount )
+            client.expire( key, expire_time )
+          end
+        end
+      end
+
+      def get( keys )
+        values = client.mget( *keys )
 
         result = {}
 
@@ -26,12 +35,12 @@ class TimeWindowDropCollector
         end
 
         result
-  		end
+      end
 
       def reset
         client.quit
       end
-  	end
+    end
   end
 end
 
