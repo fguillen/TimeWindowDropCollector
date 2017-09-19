@@ -1,0 +1,34 @@
+PATH
+  remote: .
+  specs:
+    time_window_drop_collector (0.3.7)
+      dalli
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    chronic (0.10.2)
+    dalli (2.7.6)
+    delorean (2.1.0)
+      chronic
+    memcache_mock (0.0.14)
+    metaclass (0.0.4)
+    minitest (5.10.3)
+    mocha (1.3.0)
+      metaclass (~> 0.0.1)
+    rake (12.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler
+  delorean
+  memcache_mock (= 0.0.14)
+  minitest
+  mocha
+  rake
+  time_window_drop_collector!
+
+BUNDLED WITH
+   1.15.4

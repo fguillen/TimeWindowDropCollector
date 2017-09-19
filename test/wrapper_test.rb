@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class WrapperTest < Test::Unit::TestCase
+class WrapperTest < MiniTest::Test
   def test_instance_when_memcache
     instance = TimeWindowDropCollector::Wrapper.instance( :memcache, "localhost:11211" )
     assert( instance.is_a? TimeWindowDropCollector::Wrappers::Memcache )

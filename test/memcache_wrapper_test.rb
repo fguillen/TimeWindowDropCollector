@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class MemcacheWrapperTest < Test::Unit::TestCase
+class MemcacheWrapperTest < MiniTest::Test
   def test_initialize
     Dalli::Client.expects( :new ).with( ["arg1"] ).returns( "client" )
     wrapper = TimeWindowDropCollector::Wrappers::Memcache.new( ["arg1"] )

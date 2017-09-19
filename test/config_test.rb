@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class ConfigTest < Test::Unit::TestCase
+class ConfigTest < MiniTest::Test
   def setup
     TimeWindowDropCollector::Logger.stubs( :log )
   end

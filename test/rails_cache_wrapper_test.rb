@@ -1,9 +1,9 @@
 require_relative "test_helper"
 
-class MemcacheWrapperTest < Test::Unit::TestCase
+class RailsCacheWrapperTest < MiniTest::Test
   def setup
-    @rails_client = mock()
-    Rails.stubs( :cache ).returns( @rails_cache )
+    rails_cache = mock()
+    Rails.stubs( :cache ).returns( rails_cache )
   end
 
   def test_initialize

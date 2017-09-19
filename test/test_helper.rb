@@ -1,5 +1,5 @@
-require "test/unit"
-require "mocha"
+require "minitest/autorun"
+require "mocha/setup"
 require "delorean"
 require "memcache_mock"
 

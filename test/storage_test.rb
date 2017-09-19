@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class StorageTest < Test::Unit::TestCase
+class StorageTest < MiniTest::Test
   def setup
     @wrapper = mock()
     @storage = TimeWindowDropCollector::Storage.new( @wrapper, 600, 10 )
@@ -112,7 +112,7 @@ class StorageTest < Test::Unit::TestCase
     assert_equal( 0, key_counts["key3"])
   end
 
-    def test_grouping_when_not_key
+  def test_grouping_when_not_key
     key_values = {
       "drop_window_key1_201201031416" => 1,
       "drop_window_key2_201201031412" => 7
@@ -122,7 +122,7 @@ class StorageTest < Test::Unit::TestCase
 
     assert_equal( 1, key_counts["key1"])
     assert_equal( 7, key_counts["key2"])
-    assert_equal( nil, key_counts["key3"])
+    assert_nil( key_counts["key3"])
   end
 
   def test_integration_count
@@ -140,7 +140,7 @@ class StorageTest < Test::Unit::TestCase
     assert_equal( 2, keys_values["key_1"])
     assert_equal( 3, keys_values["key_2"])
     assert_equal( 1, keys_values["key_3"])
-    assert_equal( nil, keys_values["key_4"])
+    assert_nil( keys_values["key_4"])
   end
 
   def test_slice_start_timestamp
@@ -262,7 +262,7 @@ class StorageTest < Test::Unit::TestCase
 
     # counters
     Delorean.time_travel_to( '2012-01-03 10:59' ) do
-      assert_equal( nil, storage.count( ["key_1"] )["key_1"] )
+      assert_nil( storage.count( ["key_1"] )["key_1"] )
     end
 
     Delorean.time_travel_to( '2012-01-03 11:00' ) do
@@ -286,7 +286,7 @@ class StorageTest < Test::Unit::TestCase
     end
 
     Delorean.time_travel_to( '2012-01-03 11:20' ) do
-      assert_equal( nil,  storage.count( ["key_1"] )["key_1"] )
+      assert_nil( storage.count( ["key_1"] )["key_1"] )
     end
   end
 end

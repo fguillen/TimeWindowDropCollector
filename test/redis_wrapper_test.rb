@@ -12,7 +12,7 @@ class RedisMock
   end
 end
 
-class RedisWrapperTest < Test::Unit::TestCase
+class RedisWrapperTest < MiniTest::Test
   def test_initialize
     Redis.expects( :new ).with( ["arg1", "arg2"] ).returns( "client" )
     wrapper = TimeWindowDropCollector::Wrappers::Redis.new( ["arg1", "arg2"] )

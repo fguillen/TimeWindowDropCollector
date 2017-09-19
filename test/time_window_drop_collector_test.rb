@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class TimeWindowDropCollectorTest < Test::Unit::TestCase
+class TimeWindowDropCollectorTest < MiniTest::Test
   def setup
   end
 
@@ -28,7 +28,7 @@ class TimeWindowDropCollectorTest < Test::Unit::TestCase
     TimeWindowDropCollector::Wrapper.expects( :instance ).with( "client", "client_opts" ).returns( "wrapper" )
     TimeWindowDropCollector::Storage.expects( :new ).with( "wrapper", "window", "slices" ).returns( "storage" )
 
-    twdc = TimeWindowDropCollector.new {}
+    TimeWindowDropCollector.new {}
   end
 
   def test_drop

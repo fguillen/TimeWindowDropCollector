@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class MockWrapperTest < Test::Unit::TestCase
+class MockWrapperTest < MiniTest::Test
   def test_initialize
     MemcacheMock.expects( :new ).returns( "client" )
     wrapper = TimeWindowDropCollector::Wrappers::Mock.new( ["arg1"] )

@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-class LoggerTest < Test::Unit::TestCase
+class LoggerTest < MiniTest::Test
   def setup
     @old_env = ENV["TWDC_DEBUG"]
     ENV["TWDC_DEBUG"] = "on"
