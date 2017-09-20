@@ -84,3 +84,6 @@ It uses the `Rails.cache` accesible
         client :redis, { :host => "host", :port => "port" }
       end
 
+## Log
+
+You can set the ENV_VAR `TWDC_DEBUG` and debug log will put to the stdout.
