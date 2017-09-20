@@ -20,7 +20,7 @@ class TimeWindowDropCollector
       end
 
       def get( keys )
-        client.read_multi( *keys )
+        client.read_multi( *keys, { :raw => true } )
       end
 
       def reset

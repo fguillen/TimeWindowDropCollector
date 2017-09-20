@@ -28,9 +28,9 @@ class RailsCacheWrapperTest < MiniTest::Test
     wrapper.decr( ["key1", "key2"], "expire_time", 5 )
   end
 
-  def test_values_for
+  def test_get
     wrapper = TimeWindowDropCollector::Wrappers::RailsCache.new( ["arg1"] )
-    wrapper.client.expects( :read_multi ).with( "keys" ).returns( "keys_values" )
+    wrapper.client.expects( :read_multi ).with( "keys", { :raw => true } ).returns( "keys_values" )
     assert_equal( "keys_values", wrapper.get( "keys" ))
   end
 
