@@ -18,12 +18,12 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split( "\n" ).map{ |f| File.basename( f ) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "bundler"
-  s.add_development_dependency "rake"
-  s.add_development_dependency "mocha"
-  s.add_development_dependency "delorean"
-  s.add_development_dependency "memcache_mock",   "0.0.14"
-  s.add_development_dependency "minitest"
+  s.add_development_dependency "bundler", "~> 1.15"
+  s.add_development_dependency "rake", "~> 12.1"
+  s.add_development_dependency "mocha", "~> 1.3"
+  s.add_development_dependency "delorean", "~> 2.1"
+  s.add_development_dependency "memcache_mock", "0.0.14"
+  s.add_development_dependency "minitest", "~> 5.10"
 
-  s.add_dependency "dalli"
+  s.add_dependency "dalli", "~> 2.7"
 end
